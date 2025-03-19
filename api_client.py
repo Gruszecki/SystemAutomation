@@ -1,4 +1,8 @@
+import logging
+
 import requests
+
+logger = logging.getLogger(__name__)
 
 
 class ApiClient:
@@ -7,8 +11,9 @@ class ApiClient:
 
     def send_request(self, endpoint: str, params: dict = None):
         url = f'{self.base_url}/{endpoint}'
-        response = requests.get(url, params=params, timeout=5)
 
-        # TODO: logging
-
-        return response
+        try:
+            response = requests.get(url, params=params, timeout=5)
+            return response
+        except requests.exceptions.ConnectTimeout:
+            logger.error(f'Timeout: could not connect to {url}')
